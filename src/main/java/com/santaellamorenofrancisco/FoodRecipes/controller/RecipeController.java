@@ -8,11 +8,16 @@ import com.santaellamorenofrancisco.FoodRecipes.model.Ingredients;
 import com.santaellamorenofrancisco.FoodRecipes.model.Category;
 import com.santaellamorenofrancisco.FoodRecipes.services.RecipeCategoryService;
 import com.santaellamorenofrancisco.FoodRecipes.services.RecipeService;
-import com.santaellamorenofrancisco.FoodRecipes.repository.IngredientsRepository; // Asegúrate de tener este import
-import com.santaellamorenofrancisco.FoodRecipes.repository.CategoryRepository; // Asegúrate de tener este import
+import com.santaellamorenofrancisco.FoodRecipes.repository.IngredientsRepository;
+import com.santaellamorenofrancisco.FoodRecipes.repository.CategoryRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,39 +35,51 @@ public class RecipeController {
     private RecipeService recipeService;
 
     @Autowired
-    private IngredientsRepository ingredientsRepository; // Repositorio para ingredientes
+    private IngredientsRepository ingredientsRepository;
 
     @Autowired
-    private CategoryRepository categoryRepository; // Repositorio para categorías
-    
-    @Autowired
-    private RecipeCategoryService recipeCategoryService; // Repositorio para categorías
+    private CategoryRepository categoryRepository;
 
-    // Obtener todas las recetas
+    @Autowired
+    private RecipeCategoryService recipeCategoryService;
+
+    @Operation(summary = "Obtiene todas las recetas")
+    @ApiResponse(responseCode = "200", description = "Lista de recetas obtenida exitosamente",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Recipe.class)))
     @GetMapping
     public ResponseEntity<List<Recipe>> getAllRecipes() {
         List<Recipe> recipes = recipeService.getAllRecipes();
         return ResponseEntity.ok(recipes);
     }
 
-    // Obtener receta por ID
+    @Operation(summary = "Obtiene una receta por su ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Receta encontrada",
+                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = Recipe.class))),
+        @ApiResponse(responseCode = "404", description = "Receta no encontrada",
+                     content = @Content(mediaType = "application/json"))
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<Recipe> getRecipeById(@PathVariable Long id) {
+    public ResponseEntity<Recipe> getRecipeById(
+            @Parameter(description = "ID de la receta") @PathVariable Long id) {
         try {
             Recipe recipe = recipeService.getRecipeById(id);
             return ResponseEntity.ok(recipe);
         } catch (RecipeNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // 404 si no se encuentra
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
-    // Crear o actualizar receta
+    @Operation(summary = "Crea o actualiza una receta")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Receta creada o actualizada exitosamente",
+                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = Recipe.class))),
+        @ApiResponse(responseCode = "500", description = "Error al guardar la receta",
+                     content = @Content(mediaType = "application/json"))
+    })
     @PostMapping()
     public ResponseEntity<Recipe> saveRecipe(@RequestBody Recipe recipe) {
         try {
-            System.out.println(recipe);
-
-            // Verificar ingredientes existentes
             Set<RecipeIngredients> recipeIngredientsSet = new HashSet<>();
             for (RecipeIngredients recipeIngredient : recipe.getRecipeIngredients()) {
                 Optional<Ingredients> existingIngredient = ingredientsRepository.findById(recipeIngredient.getIngredients().getId());
@@ -72,7 +89,6 @@ public class RecipeController {
             }
             recipe.setRecipeIngredients(recipeIngredientsSet);
 
-            // Verificar categorías existentes
             Set<RecipeCategory> recipeCategorySet = new HashSet<>();
             for (RecipeCategory recipeCategory : recipe.getRecipeCategories()) {
                 Optional<Category> existingCategory = categoryRepository.findById(recipeCategory.getCategory().getId());
@@ -82,29 +98,46 @@ public class RecipeController {
             }
             recipe.setRecipeCategories(recipeCategorySet);
 
-            // Llama al servicio con la receta
-            Recipe savedRecipe = recipeService.saveOrUpdateRecipe(recipe); 
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedRecipe); // 201 si se crea con éxito
+            Recipe savedRecipe = recipeService.saveOrUpdateRecipe(recipe);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedRecipe);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 si hay un error al guardar
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
-    // Eliminar receta por ID
+    @Operation(summary = "Elimina una receta por su ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Receta eliminada exitosamente",
+                     content = @Content(mediaType = "application/json")),
+        @ApiResponse(responseCode = "404", description = "Receta no encontrada",
+                     content = @Content(mediaType = "application/json")),
+        @ApiResponse(responseCode = "500", description = "Error al eliminar la receta",
+                     content = @Content(mediaType = "application/json"))
+    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteRecipe(@PathVariable Long id) {
+    public ResponseEntity<String> deleteRecipe(
+            @Parameter(description = "ID de la receta a eliminar") @PathVariable Long id) {
         try {
             recipeService.deleteRecipe(id);
             return ResponseEntity.ok("Receta eliminada con éxito");
         } catch (RecipeNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Receta no encontrada"); // 404 si no se encuentra
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Receta no encontrada");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar la receta"); // 500 si hay error al eliminar
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar la receta");
         }
     }
-    
+
+    @Operation(summary = "Crear o actualizar una receta con imagen")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Receta creada o actualizada con imagen",
+                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = Recipe.class))),
+        @ApiResponse(responseCode = "400", description = "Error en la solicitud",
+                     content = @Content(mediaType = "application/json"))
+    })
     @PostMapping("/image")
-    public ResponseEntity<Recipe> createOrUpdateRecipe(@RequestPart("recipe") Recipe recipe, @RequestPart("imageFile") MultipartFile imageFile) {
+    public ResponseEntity<Recipe> createOrUpdateRecipe(
+            @Parameter(description = "Datos de la receta") @RequestPart("recipe") Recipe recipe,
+            @Parameter(description = "Archivo de imagen") @RequestPart("imageFile") MultipartFile imageFile) {
         try {
             Recipe savedRecipe = recipeService.saveOrUpdateRecipeImage(recipe, imageFile);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedRecipe);
@@ -113,28 +146,41 @@ public class RecipeController {
         }
     }
 
-    // Buscar recetas por dificultad
+    @Operation(summary = "Buscar recetas por dificultad")
+    @ApiResponse(responseCode = "200", description = "Recetas encontradas por dificultad",
+                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = Recipe.class)))
     @GetMapping("/difficulty/{difficulty}")
-    public ResponseEntity<List<Recipe>> getRecipesByDifficulty(@PathVariable String difficulty) {
+    public ResponseEntity<List<Recipe>> getRecipesByDifficulty(
+            @Parameter(description = "Dificultad de las recetas") @PathVariable String difficulty) {
         try {
             List<Recipe> recipes = recipeService.getRecipesByDifficulty(difficulty);
             return ResponseEntity.ok(recipes);
         } catch (RecipeNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // 404 si no se encuentran recetas con la dificultad especificada
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
-    // Buscar recetas cuyo tiempo de preparación sea menor o igual a un valor
+    @Operation(summary = "Buscar recetas por tiempo máximo de preparación")
+    @ApiResponse(responseCode = "200", description = "Recetas encontradas por tiempo",
+                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = Recipe.class)))
     @GetMapping("/time/{maxTime}")
-    public ResponseEntity<List<Recipe>> getRecipesByMaxTime(@PathVariable int maxTime) {
+    public ResponseEntity<List<Recipe>> getRecipesByMaxTime(
+            @Parameter(description = "Tiempo máximo de preparación") @PathVariable int maxTime) {
         try {
             List<Recipe> recipes = recipeService.getRecipesByMaxTime(maxTime);
             return ResponseEntity.ok(recipes);
         } catch (RecipeNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // 404 si no se encuentran recetas dentro del tiempo especificado
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
-    
+
+    @Operation(summary = "Crear o actualizar múltiples recetas")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Recetas creadas o actualizadas",
+                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = Recipe.class))),
+        @ApiResponse(responseCode = "500", description = "Error al crear o actualizar recetas",
+                     content = @Content(mediaType = "application/json"))
+    })
     @PostMapping("/list")
     public ResponseEntity<List<Recipe>> saveRecipes(@RequestBody List<Recipe> recipes) {
         try {
@@ -144,19 +190,21 @@ public class RecipeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-    
-    // Buscar recetas por dificultad
+
+    @Operation(summary = "Buscar recetas por nombre de categoría")
+    @ApiResponse(responseCode = "200", description = "Recetas encontradas por categoría",
+                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = Recipe.class)))
     @GetMapping("/category/{categoryName}")
-    public ResponseEntity<List<Recipe>> getRecipesByCategoryName(@PathVariable String categoryName) {
+    public ResponseEntity<List<Recipe>> getRecipesByCategoryName(
+            @Parameter(description = "Nombre de la categoría de las recetas") @PathVariable String categoryName) {
         try {
             List<Recipe> recipes = recipeCategoryService.getRecipesByCategoryName(categoryName);
             return ResponseEntity.ok(recipes);
         } catch (RecipeNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // 404 si no se encuentran recetas con la dificultad especificada
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
-    // Manejo de excepciones global
     @ExceptionHandler(RecipeNotFoundException.class)
     public ResponseEntity<String> handleRecipeNotFoundException(RecipeNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

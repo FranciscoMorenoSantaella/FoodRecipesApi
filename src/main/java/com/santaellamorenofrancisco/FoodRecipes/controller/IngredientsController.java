@@ -2,8 +2,13 @@ package com.santaellamorenofrancisco.FoodRecipes.controller;
 
 import com.santaellamorenofrancisco.FoodRecipes.exceptions.IngredientsNotFoundException;
 import com.santaellamorenofrancisco.FoodRecipes.model.Ingredients;
-import com.santaellamorenofrancisco.FoodRecipes.model.Recipe;
 import com.santaellamorenofrancisco.FoodRecipes.services.IngredientsService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,48 +23,79 @@ public class IngredientsController {
     @Autowired
     private IngredientsService ingredientsService;
 
-    // Obtener todos los ingredientes
+    @Operation(summary = "Obtiene todos los ingredientes")
+    @ApiResponse(responseCode = "200", description = "Lista de ingredientes obtenida exitosamente",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Ingredients.class)))
     @GetMapping
     public ResponseEntity<List<Ingredients>> getAllIngredients() {
         List<Ingredients> ingredients = ingredientsService.getAllIngredients();
         return ResponseEntity.ok(ingredients);
     }
 
-    // Obtener ingrediente por ID
+    @Operation(summary = "Obtiene un ingrediente por su ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ingrediente encontrado", 
+                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = Ingredients.class))),
+        @ApiResponse(responseCode = "404", description = "Ingrediente no encontrado", 
+                     content = @Content(mediaType = "application/json"))
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<Ingredients> getIngredientById(@PathVariable Long id) {
+    public ResponseEntity<Ingredients> getIngredientById(
+            @Parameter(description = "ID del ingrediente") @PathVariable Long id) {
         try {
             Ingredients ingredient = ingredientsService.getIngredientById(id);
             return ResponseEntity.ok(ingredient);
         } catch (IngredientsNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // 404 si no se encuentra
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
-    // Obtener ingrediente por nombre
+    @Operation(summary = "Obtiene un ingrediente por su nombre")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ingrediente encontrado",
+                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = Ingredients.class))),
+        @ApiResponse(responseCode = "404", description = "Ingrediente no encontrado", 
+                     content = @Content(mediaType = "application/json"))
+    })
     @GetMapping("/name/{name}")
-    public ResponseEntity<Ingredients> getIngredientByName(@PathVariable String name) {
+    public ResponseEntity<Ingredients> getIngredientByName(
+            @Parameter(description = "Nombre del ingrediente") @PathVariable String name) {
         try {
             Ingredients ingredient = ingredientsService.getIngredientByName(name);
             return ResponseEntity.ok(ingredient);
         } catch (IngredientsNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // 404 si no se encuentra
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
-    // Crear o actualizar ingrediente
+    @Operation(summary = "Crea o actualiza un ingrediente")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Ingrediente creado o actualizado exitosamente",
+                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = Ingredients.class))),
+        @ApiResponse(responseCode = "500", description = "Error al crear o actualizar el ingrediente",
+                     content = @Content(mediaType = "application/json"))
+    })
     @PostMapping
-    public ResponseEntity<Ingredients> saveIngredient(@RequestBody Ingredients ingredient) {
+    public ResponseEntity<Ingredients> saveIngredient(
+            @Parameter(description = "Datos del ingrediente a crear o actualizar") @RequestBody Ingredients ingredient) {
         try {
             Ingredients savedIngredient = ingredientsService.saveOrUpdateIngredient(ingredient);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedIngredient); // 201 si se crea con éxito
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedIngredient);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 500 si hay error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-    
+
+    @Operation(summary = "Guarda una lista de ingredientes")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Ingredientes creados exitosamente",
+                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = Ingredients.class))),
+        @ApiResponse(responseCode = "500", description = "Error al guardar los ingredientes",
+                     content = @Content(mediaType = "application/json"))
+    })
     @PostMapping("/list")
-    public ResponseEntity<List<Ingredients>> saveRecipes(@RequestBody List<Ingredients> ingredients) {
+    public ResponseEntity<List<Ingredients>> saveRecipes(
+            @Parameter(description = "Lista de ingredientes a guardar") @RequestBody List<Ingredients> ingredients) {
         try {
             List<Ingredients> savedRecipes = ingredientsService.saveAll(ingredients);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedRecipes);
@@ -68,22 +104,25 @@ public class IngredientsController {
         }
     }
 
-    // Eliminar ingrediente por ID
+    @Operation(summary = "Elimina un ingrediente por su ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ingrediente eliminado exitosamente", 
+                     content = @Content(mediaType = "application/json")),
+        @ApiResponse(responseCode = "404", description = "Ingrediente no encontrado",
+                     content = @Content(mediaType = "application/json")),
+        @ApiResponse(responseCode = "500", description = "Error al eliminar el ingrediente",
+                     content = @Content(mediaType = "application/json"))
+    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteIngredient(@PathVariable Long id) {
+    public ResponseEntity<String> deleteIngredient(
+            @Parameter(description = "ID del ingrediente a eliminar") @PathVariable Long id) {
         try {
             ingredientsService.deleteIngredient(id);
             return ResponseEntity.ok("Ingrediente eliminado con éxito");
         } catch (IngredientsNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ingrediente no encontrado"); // 404 si no se encuentra
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ingrediente no encontrado");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar el ingrediente"); // 500 si hay error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar el ingrediente");
         }
-    }
-
-    // Manejo global de excepciones de ingrediente no encontrado
-    @ExceptionHandler(IngredientsNotFoundException.class)
-    public ResponseEntity<String> handleIngredientNotFoundException(IngredientsNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 }
