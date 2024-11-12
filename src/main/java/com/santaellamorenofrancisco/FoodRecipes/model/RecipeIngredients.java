@@ -21,8 +21,8 @@ public class RecipeIngredients {
     private Recipe recipe;
 
     @ManyToOne
+    //@JsonIgnore
     @JsonProperty("ingredient")
-    @JsonIgnore /**/
     @JoinColumn(name = "ingredient_id", nullable = false) // Clave foránea hacia Ingredients
     private Ingredients ingredient;
 

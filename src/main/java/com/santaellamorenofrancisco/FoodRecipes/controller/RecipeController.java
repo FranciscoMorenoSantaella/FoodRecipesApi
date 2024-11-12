@@ -139,6 +139,7 @@ public class RecipeController {
             @Parameter(description = "Datos de la receta") @RequestPart("recipe") Recipe recipe,
             @Parameter(description = "Archivo de imagen") @RequestPart("imageFile") MultipartFile imageFile) {
         try {
+        	System.out.println(recipe.getDifficulty());
             Recipe savedRecipe = recipeService.saveOrUpdateRecipeImage(recipe, imageFile);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedRecipe);
         } catch (RuntimeException e) {

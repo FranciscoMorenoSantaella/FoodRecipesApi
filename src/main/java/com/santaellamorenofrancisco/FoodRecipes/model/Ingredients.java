@@ -38,8 +38,8 @@ public class Ingredients {
 
     // Constructor con parámetros
     public Ingredients(String name, String alergenos) {
-        this.name = name;
         this.alergenos = alergenos;
+        this.name = name;
     }
 
     // Getters y Setters
