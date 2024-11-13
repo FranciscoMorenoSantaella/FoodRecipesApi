@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.*;
 
@@ -15,7 +16,6 @@ public class Ingredients {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
@@ -74,4 +74,12 @@ public class Ingredients {
     public void setRecipeIngredients(Set<RecipeIngredients> recipeIngredients) {
         this.recipeIngredients = recipeIngredients;
     }
+
+	@Override
+	public String toString() {
+		return "Ingredients [id=" + id + ", name=" + name + ", alergenos=" + alergenos + ", recipeIngredients="
+				+ recipeIngredients + "]";
+	}
+    
+    
 }
