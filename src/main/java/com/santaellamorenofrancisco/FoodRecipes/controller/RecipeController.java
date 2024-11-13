@@ -29,6 +29,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/recipes")
+@CrossOrigin(origins = "https://foodrecipesapi-production-07df.up.railway.app")
 public class RecipeController {
 
     @Autowired

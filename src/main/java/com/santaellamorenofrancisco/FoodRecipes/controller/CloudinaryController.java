@@ -17,6 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/images")
+@CrossOrigin(origins = "https://foodrecipesapi-production-07df.up.railway.app")
 public class CloudinaryController {
 
     @Autowired

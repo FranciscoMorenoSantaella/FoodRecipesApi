@@ -18,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/ingredients")
+@CrossOrigin(origins = "https://foodrecipesapi-production-07df.up.railway.app")
 public class IngredientsController {
 
     @Autowired
