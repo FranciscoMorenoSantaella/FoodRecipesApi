@@ -1,5 +1,5 @@
 package com.santaellamorenofrancisco.FoodRecipes.configs;
-                  
+
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.servers.Server;
 
 @Configuration
 @OpenAPIDefinition(
@@ -29,5 +31,12 @@ public class SwaggerConfig {
                 .group("food-recipes-api") // Nombre del grupo
                 .pathsToMatch("/api/**") // Paths que se incluirán en la documentación
                 .build();
+    }
+
+    // Configuración del servidor en Swagger con HTTPS
+    @Bean
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI()
+            .addServersItem(new Server().url("https://foodrecipesapi-production-07df.up.railway.app"));
     }
 }
