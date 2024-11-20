@@ -13,7 +13,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Permite todos los endpoints
-                        .allowedOrigins("*") // Permite todos los orígenes (puedes especificar el dominio de Swagger)
+                        .allowedOriginPatterns("*") // Permite todos los orígenes (puedes especificar el dominio de Swagger)
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
