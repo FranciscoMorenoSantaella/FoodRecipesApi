@@ -45,3 +45,5 @@ application.properties
 #end
 src/main/resources/application.properties
 target/classes/application.properties
+/target/classes
+/src/main/resources
