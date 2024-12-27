@@ -1,0 +1,39 @@
+# Archivos de configuración específicos del entorno
+application.properties
+application.yml
+
+# Archivos de construcción de Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Archivos de Maven
+target/
+!target/*.jar
+
+# Archivos de Gradle
+.gradle/
+build/
+
+# Archivos de IDEs
+.idea/
+*.iml
+.vscode/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos temporales de Eclipse
+*.log
+*.tmp
+
+# Archivos de configuración de Spring Boot
+spring-boot-devtools.jar
+
+# Directorios de logs
+logs/
+
+# Archivos de test de cobertura
+*.lcov-report/
