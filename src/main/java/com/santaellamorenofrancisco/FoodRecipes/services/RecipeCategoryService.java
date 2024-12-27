@@ -5,6 +5,10 @@ import com.santaellamorenofrancisco.FoodRecipes.model.Recipe;
 import com.santaellamorenofrancisco.FoodRecipes.model.RecipeCategory;
 import com.santaellamorenofrancisco.FoodRecipes.repository.RecipeCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,4 +54,9 @@ public class RecipeCategoryService {
     public List<Recipe> getRecipesByCategoryName(String categoryName) {
         return recipeCategoryRepository.findRecipesByCategoryName(categoryName);
     }
+    
+    
+
+    
+    
 }

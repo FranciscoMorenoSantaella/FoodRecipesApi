@@ -1,6 +1,7 @@
 package com.santaellamorenofrancisco.FoodRecipes.controller;
 
 import com.santaellamorenofrancisco.FoodRecipes.exceptions.RecipeCategoryNotFoundException;
+import com.santaellamorenofrancisco.FoodRecipes.model.Recipe;
 import com.santaellamorenofrancisco.FoodRecipes.model.RecipeCategory;
 import com.santaellamorenofrancisco.FoodRecipes.services.RecipeCategoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +42,7 @@ public class RecipeCategoryController {
         @ApiResponse(responseCode = "404", description = "Categoría de receta no encontrada", 
                      content = @Content(mediaType = "application/json"))
     })
+    
     @GetMapping("/{id}")
     public ResponseEntity<RecipeCategory> getRecipeCategoryById(
             @Parameter(description = "ID de la categoría de receta") @PathVariable Long id) {
@@ -109,4 +112,6 @@ public class RecipeCategoryController {
     public ResponseEntity<String> handleRecipeCategoryNotFoundException(RecipeCategoryNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
+    
+	
 }

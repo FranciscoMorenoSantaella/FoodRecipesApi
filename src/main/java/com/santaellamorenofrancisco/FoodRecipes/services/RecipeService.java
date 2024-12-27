@@ -1,5 +1,9 @@
 package com.santaellamorenofrancisco.FoodRecipes.services;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 import com.santaellamorenofrancisco.FoodRecipes.exceptions.RecipeNotFoundException;
 import com.santaellamorenofrancisco.FoodRecipes.model.Recipe;
 import com.santaellamorenofrancisco.FoodRecipes.model.RecipeCategory;
@@ -110,4 +114,45 @@ public class RecipeService {
         }
         return recipes;
     }
+    
+	public Page<Recipe> getRecipeByPage(int pagenumber, int pagesize) throws Exception {
+		if (pagenumber >= 0 && pagesize >= 0) {
+			try {
+				Sort sort = Sort.by(Sort.Direction.ASC, "name");
+				Pageable page = PageRequest.of(pagenumber, pagesize, sort);
+				
+				return recipeRepository.findAll(page); 
+			} catch (Exception e) {
+				throw new Exception("Error en la consulta", e);
+			}
+		} else {
+			throw new Exception("El numero de pagina y/o el limite no puede ser menor que 0");
+		}
+	}
+	
+	public Page<Recipe> getRecipeByNamePageable(String recipename,int pagenumber, int pagesize) throws Exception {
+		if (pagenumber >= 0 && pagesize >= 0) {
+			try {
+				Sort sort = Sort.by(Sort.Direction.ASC, "name");
+				Pageable page = PageRequest.of(pagenumber, pagesize, sort);
+				
+				return recipeRepository.getRecipeByNamePageable(recipename, page);
+			} catch (Exception e) {
+				throw new Exception("Error en la consulta", e);
+			}
+		} else {
+			throw new Exception("El numero de pagina y/o el limite no puede ser menor que 0");
+		}
+	}
+	
+	
+    public Page<Recipe> getRecipesByCategoryNamePageable(String categoryName, int page, int pagesize) {
+    	Sort sort = Sort.by(Sort.Direction.ASC, "id");
+    	Pageable pageable = PageRequest.of(page, pagesize,sort); // Crea un objeto Pageable con el número de página y tamaño.
+        Page<Recipe> recipesPage = recipeRepository.findRecipesByCategoryNamePageable(categoryName, pageable); // Llama al método del repositorio.
+
+        return recipesPage;
+    }
+	
+    
 }

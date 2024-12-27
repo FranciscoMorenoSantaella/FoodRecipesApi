@@ -18,7 +18,10 @@ public class Category {
     private String name;
 
     @Column(name = "icon", nullable = false)
-    private char icon;
+    private String icon;
+    
+    @Column(name = "imageUrl", nullable = false)
+    private String imageUrl;
 
     // Relación con RecipeCategory
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
@@ -30,7 +33,7 @@ public class Category {
     }
 
     // Constructor con parámetros
-    public Category(String name, char icon) {
+    public Category(String name, String icon) {
         this.name = name;
         this.icon = icon;
     }
@@ -52,15 +55,23 @@ public class Category {
         this.name = name;
     }
 
-    public char getIcon() {
+    public String getIcon() {
         return icon;
     }
 
-    public void setIcon(char icon) {
+    public void setIcon(String icon) {
         this.icon = icon;
     }
 
-    public Set<RecipeCategory> getRecipeCategories() {
+    public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public Set<RecipeCategory> getRecipeCategories() {
         return recipeCategories;
     }
 

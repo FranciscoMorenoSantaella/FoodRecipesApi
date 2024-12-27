@@ -3,9 +3,16 @@ package com.santaellamorenofrancisco.FoodRecipes.services;
 import com.santaellamorenofrancisco.FoodRecipes.exceptions.CategoryNotFoundException;
 import com.santaellamorenofrancisco.FoodRecipes.model.Category;
 import com.santaellamorenofrancisco.FoodRecipes.model.Recipe;
+import com.santaellamorenofrancisco.FoodRecipes.model.RecipeCategory;
+import com.santaellamorenofrancisco.FoodRecipes.model.RecipeIngredients;
 import com.santaellamorenofrancisco.FoodRecipes.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +23,8 @@ public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private CloudinaryService cloudinaryService;
     // Obtener todas las categorías
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
@@ -42,6 +51,27 @@ public class CategoryService {
         }
     }
     
+    public Category saveOrUpdateCategoryImage(Category category, MultipartFile imageFile) {
+        try {
+            // Si se pasa un archivo de imagen, lo subimos a Cloudinary
+        	System.out.println("soy imagefile " + imageFile);
+            if (imageFile != null && !imageFile.isEmpty()) {
+            	System.out.println("entro al if" + imageFile);
+                String uploadResult = cloudinaryService.uploadImage(imageFile);
+                String imageUrl = (String) uploadResult;  // Obtener la URL de la imagen
+                category.setImageUrl(imageUrl);  // Guardar la URL de la imagen en la categoria
+                System.out.println(category);
+            }
+
+            // Guardar la categoria
+            Category savedCategory = categoryRepository.save(category);
+
+            return savedCategory;  // Retornar la categoria guardada
+        } catch (Exception e) {
+            throw new RuntimeException("Error al guardar la receta: " + e.getMessage());
+        }
+    }
+    
     // Método para guardar una lista de categories
     public List<Category> saveAll(List<Category> category) {
         return categoryRepository.saveAll(category); // Utiliza saveAll de JpaRepository
@@ -56,4 +86,19 @@ public class CategoryService {
             throw new RuntimeException("Error al eliminar la categoría con ID " + categoryId + ": " + e.getMessage());
         }
     }
+    
+	public Page<Category> getCategoryByPage(int pagenumber, int pagesize) throws Exception {
+		if (pagenumber >= 0 && pagesize >= 0) {
+			try {
+				Sort sort = Sort.by(Sort.Direction.ASC, "name");
+				Pageable page = PageRequest.of(pagenumber, pagesize, sort);
+				
+				return categoryRepository.findAll(page); 
+			} catch (Exception e) {
+				throw new Exception("Error en la consulta", e);
+			}
+		} else {
+			throw new Exception("El numero de pagina y/o el limite no puede ser menor que 0");
+		}
+	}
 }
