@@ -16,6 +16,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import org.springdoc.core.converters.models.Sort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +28,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 @RestController
 @RequestMapping("/api/recipes")
 @CrossOrigin(origins = "https://foodrecipesapi-production-07df.up.railway.app")
@@ -211,4 +214,51 @@ public class RecipeController {
     public ResponseEntity<String> handleRecipeNotFoundException(RecipeNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
+    
+	@CrossOrigin(origins = "http://localhost:8080")
+	@RequestMapping(value = "/pageable/{pagenumber}/{pagesize}", method = RequestMethod.GET)
+	public ResponseEntity<Page<Recipe>> getRecipePageable(@PathVariable int pagenumber, @PathVariable int pagesize) {
+		if (pagenumber >= 0 && pagesize >= 0) {
+			try {
+				Page<Recipe> pageRecipes = recipeService.getRecipeByPage(pagenumber, pagesize);
+				  return ResponseEntity.ok(pageRecipes);
+			} catch (Exception e) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			}
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+	}
+	
+	@CrossOrigin(origins = "http://localhost:8080")
+	@RequestMapping(value = "/pageable/name/{recipename}/{pagenumber}/{pagesize}", method = RequestMethod.GET)
+	public ResponseEntity<Page<Recipe>> getRecipeByNamePageable(@PathVariable String recipename, @PathVariable int pagenumber, @PathVariable int pagesize) {
+		if (pagenumber >= 0 && pagesize >= 0) {
+			try {
+				Page<Recipe> pageRecipes = recipeService.getRecipeByNamePageable(recipename,pagenumber, pagesize);
+				  return ResponseEntity.ok(pageRecipes);
+			} catch (Exception e) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			}
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+	}
+	
+	
+	@CrossOrigin(origins = "http://localhost:8080")
+	@RequestMapping(value = "/pageable/{categoryname}/{pagenumber}/{pagesize}", method = RequestMethod.GET)
+	public ResponseEntity<Page<Recipe>> getRecipePageable(@PathVariable String categoryname , @PathVariable int pagenumber, @PathVariable int pagesize) {
+		if (pagenumber >= 0 && pagesize >= 0) {
+			try {
+				System.out.println(categoryname + pagenumber + pagesize);
+				Page<Recipe> pageRecipes = recipeService.getRecipesByCategoryNamePageable(categoryname,pagenumber, pagesize);
+				  return ResponseEntity.ok(pageRecipes);
+			} catch (Exception e) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			}
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+	}
 }

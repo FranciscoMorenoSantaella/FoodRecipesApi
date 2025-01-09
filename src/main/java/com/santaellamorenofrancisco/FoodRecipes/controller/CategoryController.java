@@ -2,6 +2,7 @@ package com.santaellamorenofrancisco.FoodRecipes.controller;
 
 import com.santaellamorenofrancisco.FoodRecipes.exceptions.CategoryNotFoundException;
 import com.santaellamorenofrancisco.FoodRecipes.model.Category;
+import com.santaellamorenofrancisco.FoodRecipes.model.Recipe;
 import com.santaellamorenofrancisco.FoodRecipes.services.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,9 +11,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -92,6 +95,28 @@ public class CategoryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+    
+    @Operation(summary = "Crear o actualizar una receta con imagen")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Categoria creada o actualizada con imagen",
+                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = Category.class))),
+        @ApiResponse(responseCode = "400", description = "Error en la solicitud",
+                     content = @Content(mediaType = "application/json"))
+    })
+    @PostMapping("/image")
+    public ResponseEntity<Category> createOrUpdateCategory(
+            @Parameter(description = "Datos de la categoria") @RequestPart("Category") Category category,
+            @Parameter(description = "Archivo de imagen") @RequestPart("imageFile") MultipartFile imageFile) {
+        try {
+        	System.out.println(category);
+        	System.out.println(imageFile);
+            Category savedRecipe = categoryService.saveOrUpdateCategoryImage(category, imageFile);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedRecipe);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
 
     @Operation(summary = "Crear o actualizar una lista de categorías", description = "Guarda o actualiza una lista de categorías.")
     @ApiResponses(value = {
@@ -137,4 +162,20 @@ public class CategoryController {
     public ResponseEntity<String> handleCategoryNotFoundException(CategoryNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
+    
+	@CrossOrigin(origins = "http://localhost:8080")
+	@RequestMapping(value = "/pageable/{pagenumber}/{pagesize}", method = RequestMethod.GET)
+	public ResponseEntity<Page<Category>> getCategoryByPage(@PathVariable int pagenumber, @PathVariable int pagesize) {
+		if (pagenumber >= 0 && pagesize >= 0) {
+			try {
+				Page<Category> pageRecipes = categoryService.getCategoryByPage(pagenumber, pagesize);
+				  return ResponseEntity.ok(pageRecipes);
+			} catch (Exception e) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			}
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+
+	}
 }

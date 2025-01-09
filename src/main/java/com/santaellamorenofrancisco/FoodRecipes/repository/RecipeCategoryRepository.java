@@ -2,6 +2,9 @@ package com.santaellamorenofrancisco.FoodRecipes.repository;
 
 import com.santaellamorenofrancisco.FoodRecipes.model.Recipe;
 import com.santaellamorenofrancisco.FoodRecipes.model.RecipeCategory;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,5 +23,7 @@ public interface RecipeCategoryRepository extends JpaRepository<RecipeCategory, 
     // Consulta para obtener todas las relaciones de RecipeCategory por nombre de la categoría
     @Query("SELECT rc.recipe FROM RecipeCategory rc WHERE rc.category.name = :categoryName")
     List<Recipe> findRecipesByCategoryName(@Param("categoryName") String categoryName);
-
+    
+   
+    
 }
