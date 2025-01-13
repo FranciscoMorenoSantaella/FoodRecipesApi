@@ -10,7 +10,10 @@ import java.util.List;
 public interface RecipeIngredientsRepository extends JpaRepository<RecipeIngredients, Long> {
 
     // Consultas personalizadas
+	
+	// Busca los ingrediente de una receta segun su id
     List<RecipeIngredients> findByRecipeId(Long recipeId);
-
+    
+    // Busca las recetas que tengan un ingrediente especifico segun su id
     List<RecipeIngredients> findByIngredientId(Long ingredientId);
 }

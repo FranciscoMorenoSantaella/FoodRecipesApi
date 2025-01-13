@@ -96,7 +96,6 @@ public class RecipeController {
 				}
 			}
 			recipe.setRecipeCategories(recipeCategorySet);
-
 			Recipe savedRecipe = recipeService.saveOrUpdateRecipe(recipe);
 			return ResponseEntity.status(HttpStatus.CREATED).body(savedRecipe);
 		} catch (Exception e) {

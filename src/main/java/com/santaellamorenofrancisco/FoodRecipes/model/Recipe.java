@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+//Es una receta de comida
 @Entity
 @Table(name = "recipe")
 public class Recipe {
