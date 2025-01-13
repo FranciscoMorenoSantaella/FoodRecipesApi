@@ -1,11 +1,13 @@
 package com.santaellamorenofrancisco.FoodRecipes.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.*;
 
+//Es la relacion entre las recetas y los ingredientes que tiene
 @Entity
 @Table(name = "recipe_ingredient")
 public class RecipeIngredients {
@@ -28,19 +30,24 @@ public class RecipeIngredients {
 
     @Column(name = "quantity", nullable = false) // Atributo adicional para la cantidad
     private String quantity;
+    
+    @Column(name = "type_quantity", nullable = false)
+    private String type_quantity;
 
     // Constructor vacío
     public RecipeIngredients() {
     }
 
-    // Constructor con parámetros
-    public RecipeIngredients(Recipe recipe, Ingredients ingredient, String quantity) {
-        this.recipe = recipe;
-        this.ingredient = ingredient;
-        this.quantity = quantity;
-    }
+  
+    public RecipeIngredients(Recipe recipe, Ingredients ingredient, String quantity, String type_quantity) {
+		this.recipe = recipe;
+		this.ingredient = ingredient;
+		this.quantity = quantity;
+		this.type_quantity = type_quantity;
+	}
 
-    // Getters y Setters	
+
+	// Getters y Setters	
     public Long getId() {
         return id;
     }
@@ -73,10 +80,30 @@ public class RecipeIngredients {
         this.quantity = quantity;
     }
 
+    
+	public Ingredients getIngredient() {
+		return ingredient;
+	}
+
+	public void setIngredient(Ingredients ingredient) {
+		this.ingredient = ingredient;
+	}
+
+
+	public String getType_quantity() {
+		return type_quantity;
+	}
+
+
+	public void setType_quantity(String type_quantity) {
+		this.type_quantity = type_quantity;
+	}
+
+
 	@Override
 	public String toString() {
 		return "RecipeIngredients [id=" + id + ", recipe=" + recipe + ", ingredient=" + ingredient + ", quantity="
-				+ quantity + "]";
+				+ quantity + ", type_quantity=" + type_quantity + "]";
 	}
-    
+   
 }

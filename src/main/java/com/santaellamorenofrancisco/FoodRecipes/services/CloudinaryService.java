@@ -24,13 +24,14 @@ public class CloudinaryService {
                 "api_secret", apiSecret));
     }
 
-    // Método para subir la imagen y retornar la URL
+    // Método para subir la imagen y devolver la URL
     public String uploadImage(MultipartFile file) throws IOException {
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
         // Extraer y devolver la URL de la imagen
         return (String) uploadResult.get("url");
     }
 
+    // Metodo para borrar la imagen segun su publicid
     public Map delete(String publicId) throws IOException {
         return cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
     }

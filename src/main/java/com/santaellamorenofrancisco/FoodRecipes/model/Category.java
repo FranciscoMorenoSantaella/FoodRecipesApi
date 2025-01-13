@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+//Es la categoria a la que pertenecera la receta
 @Entity
 @Table(name = "category")
 public class Category {

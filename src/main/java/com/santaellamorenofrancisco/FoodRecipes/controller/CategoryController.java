@@ -2,7 +2,6 @@ package com.santaellamorenofrancisco.FoodRecipes.controller;
 
 import com.santaellamorenofrancisco.FoodRecipes.exceptions.CategoryNotFoundException;
 import com.santaellamorenofrancisco.FoodRecipes.model.Category;
-import com.santaellamorenofrancisco.FoodRecipes.model.Recipe;
 import com.santaellamorenofrancisco.FoodRecipes.services.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -96,7 +95,7 @@ public class CategoryController {
         }
     }
     
-    @Operation(summary = "Crear o actualizar una receta con imagen")
+    @Operation(summary = "Crear o actualizar una categoria con imagen")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Categoria creada o actualizada con imagen",
                      content = @Content(mediaType = "application/json", schema = @Schema(implementation = Category.class))),
@@ -105,7 +104,7 @@ public class CategoryController {
     })
     @PostMapping("/image")
     public ResponseEntity<Category> createOrUpdateCategory(
-            @Parameter(description = "Datos de la categoria") @RequestPart("Category") Category category,
+            @Parameter(description = "Datos de la categoria") @RequestPart("category") Category category,
             @Parameter(description = "Archivo de imagen") @RequestPart("imageFile") MultipartFile imageFile) {
         try {
         	System.out.println(category);

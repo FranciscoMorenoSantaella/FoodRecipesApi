@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.*;
 	
+	//Es la relación que tiene la receta y las categorías a las que pertenece
 	@Entity
 	@Table(name = "recipe_category") // Nombre de la tabla intermedia
 	public class RecipeCategory {

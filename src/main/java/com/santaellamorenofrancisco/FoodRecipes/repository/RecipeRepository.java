@@ -20,22 +20,21 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 	// o igual a un valor dado
 	List<Recipe> findByTimeLessThanEqual(int time);
 
+	// Consulta para buscar las recetas de forma paginada segun el nombre de la categoria
 	@Query(value = "SELECT r.* FROM recipe_category rc, recipe r, category c WHERE c.name = ?1 AND r.id = rc.recipe_id AND c.id = rc.category_id", countQuery = "SELECT COUNT(*) FROM recipe_category rc, recipe r, category c WHERE c.name = ?1 AND r.id = rc.recipe_id AND c.id = rc.category_id", nativeQuery = true)
 	Page<Recipe> findRecipesByCategoryNamePageable(String categoryName, Pageable pageable);
 
-	@Query(
-		    value = """
-		        SELECT * 
-		        FROM recipe r 
-		        WHERE LOWER(r.name) LIKE LOWER(CONCAT('%', ?1, '%'))
-		    """,
-		    countQuery = """
-		        SELECT COUNT(*) 
-		        FROM recipe r 
-		        WHERE LOWER(r.name) LIKE LOWER(CONCAT('%', ?1, '%'))
-		    """,
-		    nativeQuery = true
-		)
-		Page<Recipe> getRecipeByNamePageable(String recipename, Pageable pageable);
+	@Query(value = """
+			    SELECT *
+			    FROM recipe r
+			    WHERE LOWER(r.name) LIKE LOWER(CONCAT('%', ?1, '%'))
+			""", countQuery = """
+			    SELECT COUNT(*)
+			    FROM recipe r
+			    WHERE LOWER(r.name) LIKE LOWER(CONCAT('%', ?1, '%'))
+			""", nativeQuery = true)
+
+	// Consulta que busca las recetas segun su nombre y te las devuelve de forma paginada
+	Page<Recipe> getRecipeByNamePageable(String recipename, Pageable pageable);
 
 }

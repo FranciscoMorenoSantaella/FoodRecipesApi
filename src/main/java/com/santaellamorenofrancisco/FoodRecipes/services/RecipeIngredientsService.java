@@ -38,7 +38,6 @@ public class RecipeIngredientsService {
 
     // Guardar o actualizar una relación RecipeIngredients
     public RecipeIngredients saveOrUpdateRecipeIngredients(RecipeIngredients recipeIngredients) {
-    	System.out.println(recipeIngredients);
         return recipeIngredientsRepository.save(recipeIngredients);
     }
     

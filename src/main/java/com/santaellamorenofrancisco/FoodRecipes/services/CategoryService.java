@@ -51,16 +51,14 @@ public class CategoryService {
         }
     }
     
+    // Guarda la categoria y si ya existe la actualiza 
     public Category saveOrUpdateCategoryImage(Category category, MultipartFile imageFile) {
         try {
             // Si se pasa un archivo de imagen, lo subimos a Cloudinary
-        	System.out.println("soy imagefile " + imageFile);
             if (imageFile != null && !imageFile.isEmpty()) {
-            	System.out.println("entro al if" + imageFile);
                 String uploadResult = cloudinaryService.uploadImage(imageFile);
                 String imageUrl = (String) uploadResult;  // Obtener la URL de la imagen
                 category.setImageUrl(imageUrl);  // Guardar la URL de la imagen en la categoria
-                System.out.println(category);
             }
 
             // Guardar la categoria
@@ -87,6 +85,7 @@ public class CategoryService {
         }
     }
     
+    // Obtiene la categoria segun la pagina y el tamaño de la pagina
 	public Page<Category> getCategoryByPage(int pagenumber, int pagesize) throws Exception {
 		if (pagenumber >= 0 && pagesize >= 0) {
 			try {

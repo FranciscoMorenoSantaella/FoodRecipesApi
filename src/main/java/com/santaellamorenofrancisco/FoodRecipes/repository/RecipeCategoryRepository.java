@@ -16,11 +16,14 @@ import java.util.List;
 public interface RecipeCategoryRepository extends JpaRepository<RecipeCategory, Long> {
 
     // Consultas personalizadas
+	
+	// Consulta para buscar la receta segun su id
     List<RecipeCategory> findByRecipeId(Long recipeId);
 
+    // Consulta Para buscar la receta segun el id de la categoria
     List<RecipeCategory> findByCategoryId(Long categoryId);
     
-    // Consulta para obtener todas las relaciones de RecipeCategory por nombre de la categoría
+    // Consulta para obtener todas las recetas segun el nombre de la categoria
     @Query("SELECT rc.recipe FROM RecipeCategory rc WHERE rc.category.name = :categoryName")
     List<Recipe> findRecipesByCategoryName(@Param("categoryName") String categoryName);
     

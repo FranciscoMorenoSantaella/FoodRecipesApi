@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.*;
 
+//Son los ingredientes que tendran la receta
 @Entity
 @Table(name = "ingredients")
 public class Ingredients {

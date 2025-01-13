@@ -13,8 +13,8 @@ import io.swagger.v3.oas.models.servers.Server;
 @Configuration
 @OpenAPIDefinition(
     info = @Info(
-        title = "Food Recipes API", // Título de la API
-        version = "1.0.0", // Versión de la API
+        title = "Food Recipes API", 
+        version = "1.0.0", 
         description = "API para la gestión de recetas de comida, ingredientes, y relaciones entre ellos. Permite crear, leer, actualizar y eliminar recetas y sus ingredientes asociados.", // Descripción detallada
         contact = @Contact(
             name = "santaellamorenofrancisco@gmail.com",
